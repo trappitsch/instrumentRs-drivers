@@ -5,6 +5,7 @@ use instrumentrs2::InstrumentRsError;
 use crate::{Input, Parameter};
 
 /// Output mode setup.
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct OutputModeSetup {
     output_mode: OutputMode,
@@ -72,6 +73,7 @@ impl Parameter<String> for OutputModeSetup {
 }
 
 /// The output modes that are available.
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum OutputMode {
     Off,
@@ -113,6 +115,7 @@ impl Parameter<String> for OutputMode {
 /// Sets the status on powering up the instrument.
 ///
 /// This is used for the output mode.
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum OnPowerup {
     Disabled,

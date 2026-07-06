@@ -6,6 +6,7 @@ use measurements::Current;
 use crate::Parameter;
 
 /// Heater setup.
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct HeaterSetup {
     resistance: HeaterResistance,
@@ -67,6 +68,7 @@ impl Parameter<String> for HeaterSetup {
 }
 
 /// Heater resistance setting.
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum HeaterResistance {
     /// 25 Ohm.
@@ -93,6 +95,7 @@ impl Parameter<String> for HeaterResistance {
 }
 
 /// Maximum heater output current.
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum HeaterMaxOutputCurrent {
     /// User specified output current, must be between 0 A and 2 A.
@@ -157,6 +160,7 @@ impl Parameter<String> for HeaterMaxOutputCurrent {
 }
 
 /// Heater output display units.
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum HeaterOutputDisplay {
     /// Show heater output current on display.

@@ -6,15 +6,15 @@ use instrumentrs2::InstrumentRsError;
 
 use crate::Parameter;
 
-#[derive(Debug, Clone)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[derive(Debug, Clone, Hash)]
 pub enum Channel {
     In(Input),
     Out(Output),
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[derive(Debug, Clone, Copy, PartialEq, Hash)]
 pub enum Input {
     InA,
     InB,
@@ -22,8 +22,8 @@ pub enum Input {
     InD,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[derive(Debug, Clone, Copy, PartialEq, Hash)]
 pub enum Output {
     Out1,
     Out2,

@@ -16,7 +16,7 @@ instrumentrs2 = { git = "https://github.com/trappitsch/instrumentRs2", branch = 
 ] }
 
 [features]
-serde = ["dep:serde"]
+serde = ["dep:serde", "measurements/serde"]
 serialport = ["dep:serialport"]
 
 [[example]]
