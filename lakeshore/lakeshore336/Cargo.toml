@@ -22,3 +22,6 @@ serialport = ["dep:serialport"]
 [[example]]
 name = "cryostorage"
 required-features = ["serialport"]
+
+[patch.crates-io]
+measurements = { git = 'https://github.com/rust-embedded-community/rust-measurements.git' }

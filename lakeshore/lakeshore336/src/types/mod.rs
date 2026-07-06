@@ -1,4 +1,4 @@
-use measurements::Temperature;
+use measurements::{Fraction, Temperature};
 
 use crate::{InstrumentRsError, Parameter};
 
@@ -19,6 +19,18 @@ impl Parameter<String> for Temperature {
     fn try_from_writable(val: String) -> Result<Self, InstrumentRsError> {
         let val = val.trim().parse::<f64>()?;
         Ok(Temperature::from_kelvin(val))
+    }
+}
+
+/// Percentage measurement: The device returns percent.
+impl Parameter<String> for Fraction {
+    fn to_writable(&self) -> String {
+        format!("{:.1}", self.as_percent())
+    }
+
+    fn try_from_writable(val: String) -> Result<Self, InstrumentRsError> {
+        let val = val.trim().parse::<f64>()?;
+        Ok(Fraction::from_percent(val))
     }
 }
 
