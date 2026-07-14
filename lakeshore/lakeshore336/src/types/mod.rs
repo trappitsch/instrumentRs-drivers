@@ -1,6 +1,6 @@
 use measurements::{Fraction, Temperature};
 
-use crate::{InstrumentRsError, Parameter};
+use crate::{InstrumentError, Parameter};
 
 pub mod heater_setup;
 pub mod output_mode;
@@ -16,7 +16,7 @@ impl Parameter<String> for Temperature {
         format!("{:.1}", self.as_kelvin())
     }
 
-    fn try_from_writable(val: String) -> Result<Self, InstrumentRsError> {
+    fn try_from_writable(val: String) -> Result<Self, InstrumentError> {
         let val = val.trim().parse::<f64>()?;
         Ok(Temperature::from_kelvin(val))
     }
@@ -28,7 +28,7 @@ impl Parameter<String> for Fraction {
         format!("{:.1}", self.as_percent())
     }
 
-    fn try_from_writable(val: String) -> Result<Self, InstrumentRsError> {
+    fn try_from_writable(val: String) -> Result<Self, InstrumentError> {
         let val = val.trim().parse::<f64>()?;
         Ok(Fraction::from_percent(val))
     }
@@ -39,7 +39,7 @@ impl Parameter<String> for String {
         String::from(self)
     }
 
-    fn try_from_writable(val: String) -> Result<String, InstrumentRsError> {
+    fn try_from_writable(val: String) -> Result<String, InstrumentError> {
         Ok(String::from(val.trim().trim_matches('"')))
     }
 }

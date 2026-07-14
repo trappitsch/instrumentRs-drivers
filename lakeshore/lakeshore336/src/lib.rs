@@ -1,7 +1,7 @@
 pub use {
     channel::{Channel, Input, Output},
     instrument::{Lakeshore336, Parameter},
-    instrumentrs2::InstrumentRsError,
+    instrumentrs2::InstrumentError,
 };
 
 pub mod channel;

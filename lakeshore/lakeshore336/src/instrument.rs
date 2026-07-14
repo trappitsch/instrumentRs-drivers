@@ -9,14 +9,14 @@ use instrumentrs2::transport::{Transport, Writable};
 use measurements::{Fraction, Temperature};
 
 use crate::{
-    InstrumentRsError,
+    InstrumentError,
     channel::{Channel, Input, Output},
     types::{HeaterSetup, OutputModeSetup, heater_setup::HeaterRange},
 };
 
 pub trait Parameter<W: Writable>: Sized {
     fn to_writable(&self) -> W;
-    fn try_from_writable(val: W) -> Result<Self, InstrumentRsError>;
+    fn try_from_writable(val: W) -> Result<Self, InstrumentError>;
 }
 
 pub struct Lakeshore336<I: Read + Write> {
@@ -46,7 +46,7 @@ impl<I: Read + Write> Lakeshore336<I> {
     ///
     /// Result with a string holding the following information:
     /// <manufacturer>,<model>,<instrument serial>/<option serial>,<firmware version>
-    pub fn get_name(&mut self) -> Result<String, InstrumentRsError> {
+    pub fn get_name(&mut self) -> Result<String, InstrumentError> {
         let res = self.query("*IDN?", None, None)?;
         String::try_from_writable(res)
     }
@@ -64,7 +64,7 @@ impl<'d, I: Read + Write> Lakeshore336Channel<'d, I> {
     }
 
     /// Get the name of a channel.
-    pub fn get_channel_name(&mut self) -> Result<String, InstrumentRsError> {
+    pub fn get_channel_name(&mut self) -> Result<String, InstrumentError> {
         let res = self
             .device
             .query("INNAME?", Some(Channel::In(self.idx)), None)?;
@@ -72,13 +72,13 @@ impl<'d, I: Read + Write> Lakeshore336Channel<'d, I> {
     }
 
     /// Set the name of a channel.
-    pub fn set_channel_name(&mut self, channel_name: &str) -> Result<(), InstrumentRsError> {
+    pub fn set_channel_name(&mut self, channel_name: &str) -> Result<(), InstrumentError> {
         let wrapped = format!("\"{}\"", channel_name);
         self.device
             .sendcmd("INNAME", Some(Channel::In(self.idx)), Some(&[&wrapped]))
     }
 
-    pub fn get_temperature(&mut self) -> Result<Temperature, InstrumentRsError> {
+    pub fn get_temperature(&mut self) -> Result<Temperature, InstrumentError> {
         let res = self
             .device
             .query("KRDG?", Some(Channel::In(self.idx)), None)?;
@@ -98,7 +98,7 @@ impl<'d, I: Read + Write> Lakeshore336Output<'d, I> {
     }
 
     /// Get the heater setup.
-    pub fn get_heater_setup(&mut self) -> Result<HeaterSetup, InstrumentRsError> {
+    pub fn get_heater_setup(&mut self) -> Result<HeaterSetup, InstrumentError> {
         let res = self
             .device
             .query("HTRSET?", Some(Channel::Out(self.idx)), None)?;
@@ -106,7 +106,7 @@ impl<'d, I: Read + Write> Lakeshore336Output<'d, I> {
     }
 
     /// Set the heater setup.
-    pub fn set_heater_setup(&mut self, heater_setup: HeaterSetup) -> Result<(), InstrumentRsError> {
+    pub fn set_heater_setup(&mut self, heater_setup: HeaterSetup) -> Result<(), InstrumentError> {
         self.device.sendcmd(
             "HTRSET",
             Some(Channel::Out(self.idx)),
@@ -115,7 +115,7 @@ impl<'d, I: Read + Write> Lakeshore336Output<'d, I> {
     }
 
     /// Get the output mode.
-    pub fn get_output_mode(&mut self) -> Result<OutputModeSetup, InstrumentRsError> {
+    pub fn get_output_mode(&mut self) -> Result<OutputModeSetup, InstrumentError> {
         let res = self
             .device
             .query("OUTMODE?", Some(Channel::Out(self.idx)), None)?;
@@ -126,7 +126,7 @@ impl<'d, I: Read + Write> Lakeshore336Output<'d, I> {
     pub fn set_output_mode(
         &mut self,
         output_mode_setup: OutputModeSetup,
-    ) -> Result<(), InstrumentRsError> {
+    ) -> Result<(), InstrumentError> {
         self.device.sendcmd(
             "OUTMODE",
             Some(Channel::Out(self.idx)),
@@ -135,7 +135,7 @@ impl<'d, I: Read + Write> Lakeshore336Output<'d, I> {
     }
 
     /// Get the heater range.
-    pub fn get_range(&mut self) -> Result<HeaterRange, InstrumentRsError> {
+    pub fn get_range(&mut self) -> Result<HeaterRange, InstrumentError> {
         let res = self
             .device
             .query("RANGE?", Some(Channel::Out(self.idx)), None)?;
@@ -148,7 +148,7 @@ impl<'d, I: Read + Write> Lakeshore336Output<'d, I> {
     ///
     /// Note: For outputs Out1 and Out2, all ranges are valid. For Out3 and Out4, the output can
     /// only be on or off.
-    pub fn set_range(&mut self, range: HeaterRange) -> Result<(), InstrumentRsError> {
+    pub fn set_range(&mut self, range: HeaterRange) -> Result<(), InstrumentError> {
         self.device.sendcmd(
             "RANGE",
             Some(Channel::Out(self.idx)),
@@ -160,7 +160,7 @@ impl<'d, I: Read + Write> Lakeshore336Output<'d, I> {
     ///
     /// Note: This assumes that the sensor is set up in Kelvin mode. If this is not the case, the
     /// setpoint that is returned will be wrong.
-    pub fn get_setpoint(&mut self) -> Result<Temperature, InstrumentRsError> {
+    pub fn get_setpoint(&mut self) -> Result<Temperature, InstrumentError> {
         let res = self
             .device
             .query("SETP?", Some(Channel::Out(self.idx)), None)?;
@@ -170,7 +170,7 @@ impl<'d, I: Read + Write> Lakeshore336Output<'d, I> {
     /// Set the setpoint of this output.
     /// Note: This assumes that the sensor is set up in Kelvin mode. If this is not the case, the
     /// setpoint will be set up wrong.
-    pub fn set_setpoint(&mut self, setpoint: Temperature) -> Result<(), InstrumentRsError> {
+    pub fn set_setpoint(&mut self, setpoint: Temperature) -> Result<(), InstrumentError> {
         self.device.sendcmd(
             "SETP",
             Some(Channel::Out(self.idx)),
@@ -188,7 +188,7 @@ impl<'d, I: Read + Write> Lakeshore336Output<'d, I> {
     /// For output channels 1 and 2, this queries the heater output in % using the "HTR?" command.
     /// For output channels 3 and 4, the output percentage of the unpowered analog output is queried
     /// using the "AOUT?" command.
-    pub fn get_heater_output(&mut self) -> Result<Fraction, InstrumentRsError> {
+    pub fn get_heater_output(&mut self) -> Result<Fraction, InstrumentError> {
         let res = match self.idx {
             Output::Out1 | Output::Out2 => {
                 self.device

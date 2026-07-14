@@ -1,9 +1,8 @@
 //! Implement types for outputs.
 
-use instrumentrs2::InstrumentRsError;
 use measurements::Current;
 
-use crate::Parameter;
+use crate::{InstrumentError, Parameter};
 
 /// Heater setup.
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -26,7 +25,7 @@ impl HeaterSetup {
         resistance: HeaterResistance,
         max_current: HeaterMaxOutputCurrent,
         display: HeaterOutputDisplay,
-    ) -> Result<Self, InstrumentRsError> {
+    ) -> Result<Self, InstrumentError> {
         max_current.valid_user_current()?;
         Ok(Self {
             resistance,
@@ -46,10 +45,10 @@ impl Parameter<String> for HeaterSetup {
         )
     }
 
-    fn try_from_writable(val: String) -> Result<Self, InstrumentRsError> {
+    fn try_from_writable(val: String) -> Result<Self, InstrumentError> {
         let split_vals = val.trim().split(',').collect::<Vec<&str>>();
         if split_vals.len() != 4 {
-            return Err(InstrumentRsError::BadInstrumentResponseString { msg: val });
+            return Err(InstrumentError::BadInstrumentResponseString { msg: val });
         }
 
         let resistance = HeaterResistance::try_from_writable(split_vals[0].into())?;
@@ -85,11 +84,11 @@ impl Parameter<String> for HeaterResistance {
         }
     }
 
-    fn try_from_writable(val: String) -> Result<Self, instrumentrs2::InstrumentRsError> {
+    fn try_from_writable(val: String) -> Result<Self, InstrumentError> {
         match val.trim() {
             "1" => Ok(HeaterResistance::R25Ohm),
             "2" => Ok(HeaterResistance::R50Ohm),
-            _ => Err(InstrumentRsError::BadInstrumentResponseString { msg: val }),
+            _ => Err(InstrumentError::BadInstrumentResponseString { msg: val }),
         }
     }
 }
@@ -112,12 +111,12 @@ pub enum HeaterMaxOutputCurrent {
 
 impl HeaterMaxOutputCurrent {
     /// Check if the provided user current is valid.
-    fn valid_user_current(&self) -> Result<(), InstrumentRsError> {
+    fn valid_user_current(&self) -> Result<(), InstrumentError> {
         if let HeaterMaxOutputCurrent::User(user_current) = self
             && (*user_current < Current::from_amperes(0.)
                 || *user_current > Current::from_amperes(2.0))
         {
-            return Err(InstrumentRsError::UnitfulValueOutOfRange {
+            return Err(InstrumentError::UnitfulValueOutOfRange {
                 unit: "A".into(),
                 val: user_current.as_amperes(),
                 val_min: 0.0,
@@ -139,10 +138,10 @@ impl Parameter<String> for HeaterMaxOutputCurrent {
         }
     }
 
-    fn try_from_writable(val: String) -> Result<Self, InstrumentRsError> {
+    fn try_from_writable(val: String) -> Result<Self, InstrumentError> {
         let val_split = val.trim().split(",").collect::<Vec<&str>>();
         if val_split.len() < 2 {
-            return Err(InstrumentRsError::BadInstrumentResponseString { msg: val });
+            return Err(InstrumentError::BadInstrumentResponseString { msg: val });
         }
 
         match val_split[0] {
@@ -154,7 +153,7 @@ impl Parameter<String> for HeaterMaxOutputCurrent {
             "2" => Ok(HeaterMaxOutputCurrent::C1A),
             "3" => Ok(HeaterMaxOutputCurrent::C1p141A),
             "4" => Ok(HeaterMaxOutputCurrent::C2A),
-            _ => Err(InstrumentRsError::BadInstrumentResponseString { msg: val }),
+            _ => Err(InstrumentError::BadInstrumentResponseString { msg: val }),
         }
     }
 }
@@ -177,11 +176,11 @@ impl Parameter<String> for HeaterOutputDisplay {
         }
     }
 
-    fn try_from_writable(val: String) -> Result<Self, InstrumentRsError> {
+    fn try_from_writable(val: String) -> Result<Self, InstrumentError> {
         match val.trim() {
             "1" => Ok(HeaterOutputDisplay::Current),
             "2" => Ok(HeaterOutputDisplay::Power),
-            _ => Err(InstrumentRsError::BadInstrumentResponseString { msg: val }),
+            _ => Err(InstrumentError::BadInstrumentResponseString { msg: val }),
         }
     }
 }
@@ -189,6 +188,7 @@ impl Parameter<String> for HeaterOutputDisplay {
 /// Range for the heater output.
 ///
 /// Note that for Outputs 2 and 3, only Off and LowOrOn are valid.
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum HeaterRange {
     /// Heater output is off.
@@ -211,13 +211,13 @@ impl Parameter<String> for HeaterRange {
         }
     }
 
-    fn try_from_writable(val: String) -> Result<Self, InstrumentRsError> {
+    fn try_from_writable(val: String) -> Result<Self, InstrumentError> {
         match val.trim() {
             "0" => Ok(HeaterRange::Off),
             "1" => Ok(HeaterRange::LowOrOn),
             "2" => Ok(HeaterRange::Medium),
             "3" => Ok(HeaterRange::High),
-            _ => Err(InstrumentRsError::BadInstrumentResponseString { msg: val }),
+            _ => Err(InstrumentError::BadInstrumentResponseString { msg: val }),
         }
     }
 }

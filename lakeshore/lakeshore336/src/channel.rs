@@ -2,7 +2,7 @@
 //!
 //! This should be part of the DSL/instrument implementation macro.
 
-use instrumentrs2::InstrumentRsError;
+use crate::InstrumentError;
 
 use crate::Parameter;
 
@@ -41,13 +41,13 @@ impl Parameter<String> for Input {
         }
     }
 
-    fn try_from_writable(val: String) -> Result<Self, instrumentrs2::InstrumentRsError> {
+    fn try_from_writable(val: String) -> Result<Self, InstrumentError> {
         match val.trim() {
             "A" => Ok(Input::InA),
             "B" => Ok(Input::InB),
             "C" => Ok(Input::InC),
             "D" => Ok(Input::InD),
-            _ => Err(InstrumentRsError::BadInstrumentResponseString { msg: val }),
+            _ => Err(InstrumentError::BadInstrumentResponseString { msg: val }),
         }
     }
 }
@@ -62,13 +62,13 @@ impl Parameter<String> for Output {
         }
     }
 
-    fn try_from_writable(val: String) -> Result<Self, InstrumentRsError> {
+    fn try_from_writable(val: String) -> Result<Self, InstrumentError> {
         match val.trim() {
             "1" => Ok(Output::Out1),
             "2" => Ok(Output::Out2),
             "3" => Ok(Output::Out3),
             "4" => Ok(Output::Out4),
-            _ => Err(InstrumentRsError::BadInstrumentResponseString { msg: val }),
+            _ => Err(InstrumentError::BadInstrumentResponseString { msg: val }),
         }
     }
 }
@@ -81,11 +81,11 @@ impl Parameter<String> for Channel {
         }
     }
 
-    fn try_from_writable(val: String) -> Result<Self, InstrumentRsError> {
+    fn try_from_writable(val: String) -> Result<Self, InstrumentError> {
         match val.trim() {
             "A" | "B" | "C" | "D" => Ok(Channel::In(Input::try_from_writable(val)?)),
             "1" | "2" | "3" | "4" => Ok(Channel::Out(Output::try_from_writable(val)?)),
-            _ => Err(InstrumentRsError::BadInstrumentResponseString { msg: val }),
+            _ => Err(InstrumentError::BadInstrumentResponseString { msg: val }),
         }
     }
 }

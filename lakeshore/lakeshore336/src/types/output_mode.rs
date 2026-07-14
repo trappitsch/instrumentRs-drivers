@@ -1,8 +1,6 @@
 //! Types for setting/getting output mode.
 
-use instrumentrs2::InstrumentRsError;
-
-use crate::{Input, Parameter};
+use crate::{Input, InstrumentError, Parameter};
 
 /// Output mode setup.
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -47,10 +45,10 @@ impl Parameter<String> for OutputModeSetup {
         )
     }
 
-    fn try_from_writable(val: String) -> Result<Self, InstrumentRsError> {
+    fn try_from_writable(val: String) -> Result<Self, InstrumentError> {
         let split_vals = val.trim().split(',').collect::<Vec<&str>>();
         if split_vals.len() != 3 {
-            return Err(InstrumentRsError::BadInstrumentResponseString { msg: val });
+            return Err(InstrumentError::BadInstrumentResponseString { msg: val });
         }
 
         let output_mode = OutputMode::try_from_writable(split_vals[0].into())?;
@@ -60,7 +58,7 @@ impl Parameter<String> for OutputModeSetup {
             "2" => Some(Input::InB),
             "3" => Some(Input::InC),
             "4" => Some(Input::InD),
-            _ => return Err(InstrumentRsError::BadInstrumentResponseString { msg: val }),
+            _ => return Err(InstrumentError::BadInstrumentResponseString { msg: val }),
         };
         let on_powerup = OnPowerup::try_from_writable(split_vals[2].into())?;
 
@@ -98,7 +96,7 @@ impl Parameter<String> for OutputMode {
         }
     }
 
-    fn try_from_writable(val: String) -> Result<Self, instrumentrs2::InstrumentRsError> {
+    fn try_from_writable(val: String) -> Result<Self, instrumentrs2::InstrumentError> {
         match val.trim() {
             "0" => Ok(OutputMode::Off),
             "1" => Ok(OutputMode::ClosedLoopPID),
@@ -107,7 +105,7 @@ impl Parameter<String> for OutputMode {
             "4" => Ok(OutputMode::MonitorOut),
             "5" => Ok(OutputMode::WarmupSupply),
             "6" => Ok(OutputMode::Mirroring),
-            _ => Err(InstrumentRsError::BadInstrumentResponseString { msg: val }),
+            _ => Err(InstrumentError::BadInstrumentResponseString { msg: val }),
         }
     }
 }
@@ -130,11 +128,11 @@ impl Parameter<String> for OnPowerup {
         }
     }
 
-    fn try_from_writable(val: String) -> Result<Self, InstrumentRsError> {
+    fn try_from_writable(val: String) -> Result<Self, InstrumentError> {
         match val.trim() {
             "0" => Ok(OnPowerup::Disabled),
             "1" => Ok(OnPowerup::Enabled),
-            _ => Err(InstrumentRsError::BadInstrumentResponseString { msg: val }),
+            _ => Err(InstrumentError::BadInstrumentResponseString { msg: val }),
         }
     }
 }

@@ -4,7 +4,7 @@ use std::io::{Read, Write};
 
 use instrumentrs2::transport::{Transport, Writable, read_until_terminator, write_all};
 
-use crate::{Lakeshore336, Parameter, channel::Channel};
+use crate::{InstrumentError, Lakeshore336, Parameter, channel::Channel};
 
 impl<I> Transport<&str, String> for Lakeshore336<I>
 where
@@ -16,7 +16,7 @@ where
         cmd: &str,
         idx: Option<Channel>,
         args: Option<&[&str]>,
-    ) -> Result<(), instrumentrs2::InstrumentRsError> {
+    ) -> Result<(), InstrumentError> {
         let pkg = make_package(cmd, idx, args);
         write_all(
             &mut self.interface,
@@ -30,7 +30,7 @@ where
         cmd: &str,
         idx: Option<Channel>,
         args: Option<&[&str]>,
-    ) -> Result<String, instrumentrs2::InstrumentRsError> {
+    ) -> Result<String, InstrumentError> {
         self.sendcmd(cmd, idx, args)?;
         let res = read_until_terminator(&mut self.interface, self.terminator.to_byte_slice())?;
         Ok(String::from_utf8(res)?)
