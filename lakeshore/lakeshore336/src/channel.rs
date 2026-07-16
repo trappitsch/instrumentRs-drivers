@@ -7,7 +7,7 @@ use crate::InstrumentError;
 use crate::Parameter;
 
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-#[derive(Debug, Clone, Hash)]
+#[derive(Debug, Clone, Copy, Hash)]
 pub enum Channel {
     In(Input),
     Out(Output),

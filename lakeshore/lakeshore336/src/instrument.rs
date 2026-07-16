@@ -32,8 +32,8 @@ impl<I: Read + Write> Lakeshore336<I> {
         }
     }
 
-    pub fn channel(&mut self, idx: Input) -> Lakeshore336Channel<'_, I> {
-        Lakeshore336Channel::new(idx, self)
+    pub fn channel(&mut self, idx: Input) -> Lakeshore336Input<'_, I> {
+        Lakeshore336Input::new(idx, self)
     }
 
     pub fn output(&mut self, idx: Output) -> Lakeshore336Output<'_, I> {
@@ -52,22 +52,23 @@ impl<I: Read + Write> Lakeshore336<I> {
     }
 }
 
-pub struct Lakeshore336Channel<'a, I: Read + Write> {
+pub struct Lakeshore336Input<'a, I: Read + Write> {
     device: &'a mut Lakeshore336<I>,
-    idx: Input,
+    idx: Channel,
 }
 
-impl<'d, I: Read + Write> Lakeshore336Channel<'d, I> {
+impl<'d, I: Read + Write> Lakeshore336Input<'d, I> {
     /// Returns a new channel. This can only be done through the device.
     fn new(idx: Input, device: &'d mut Lakeshore336<I>) -> Self {
-        Self { device, idx }
+        Self {
+            device,
+            idx: Channel::In(idx),
+        }
     }
 
     /// Get the name of a channel.
     pub fn get_channel_name(&mut self) -> Result<String, InstrumentError> {
-        let res = self
-            .device
-            .query("INNAME?", Some(Channel::In(self.idx)), None)?;
+        let res = self.device.query("INNAME?", Some(self.idx), None)?;
         String::try_from_writable(res)
     }
 
@@ -75,33 +76,32 @@ impl<'d, I: Read + Write> Lakeshore336Channel<'d, I> {
     pub fn set_channel_name(&mut self, channel_name: &str) -> Result<(), InstrumentError> {
         let wrapped = format!("\"{}\"", channel_name);
         self.device
-            .sendcmd("INNAME", Some(Channel::In(self.idx)), Some(&[&wrapped]))
+            .sendcmd("INNAME", Some(self.idx), Some(&[&wrapped]))
     }
 
     pub fn get_temperature(&mut self) -> Result<Temperature, InstrumentError> {
-        let res = self
-            .device
-            .query("KRDG?", Some(Channel::In(self.idx)), None)?;
+        let res = self.device.query("KRDG?", Some(self.idx), None)?;
         Temperature::try_from_writable(res)
     }
 }
 
 pub struct Lakeshore336Output<'a, I: Read + Write> {
     device: &'a mut Lakeshore336<I>,
-    idx: Output,
+    idx: Channel,
 }
 
 impl<'d, I: Read + Write> Lakeshore336Output<'d, I> {
     /// Returns a new channel. This can only be done through the device.
     fn new(idx: Output, device: &'d mut Lakeshore336<I>) -> Self {
-        Self { device, idx }
+        Self {
+            device,
+            idx: Channel::Out(idx),
+        }
     }
 
     /// Get the heater setup.
     pub fn get_heater_setup(&mut self) -> Result<HeaterSetup, InstrumentError> {
-        let res = self
-            .device
-            .query("HTRSET?", Some(Channel::Out(self.idx)), None)?;
+        let res = self.device.query("HTRSET?", Some(self.idx), None)?;
         HeaterSetup::try_from_writable(res)
     }
 
@@ -109,16 +109,14 @@ impl<'d, I: Read + Write> Lakeshore336Output<'d, I> {
     pub fn set_heater_setup(&mut self, heater_setup: HeaterSetup) -> Result<(), InstrumentError> {
         self.device.sendcmd(
             "HTRSET",
-            Some(Channel::Out(self.idx)),
+            Some(self.idx),
             Some(&[&heater_setup.to_writable()]),
         )
     }
 
     /// Get the output mode.
     pub fn get_output_mode(&mut self) -> Result<OutputModeSetup, InstrumentError> {
-        let res = self
-            .device
-            .query("OUTMODE?", Some(Channel::Out(self.idx)), None)?;
+        let res = self.device.query("OUTMODE?", Some(self.idx), None)?;
         OutputModeSetup::try_from_writable(res)
     }
 
@@ -129,16 +127,14 @@ impl<'d, I: Read + Write> Lakeshore336Output<'d, I> {
     ) -> Result<(), InstrumentError> {
         self.device.sendcmd(
             "OUTMODE",
-            Some(Channel::Out(self.idx)),
+            Some(self.idx),
             Some(&[&output_mode_setup.to_writable()]),
         )
     }
 
     /// Get the heater range.
     pub fn get_range(&mut self) -> Result<HeaterRange, InstrumentError> {
-        let res = self
-            .device
-            .query("RANGE?", Some(Channel::Out(self.idx)), None)?;
+        let res = self.device.query("RANGE?", Some(self.idx), None)?;
         HeaterRange::try_from_writable(res)
     }
 
@@ -149,11 +145,8 @@ impl<'d, I: Read + Write> Lakeshore336Output<'d, I> {
     /// Note: For outputs Out1 and Out2, all ranges are valid. For Out3 and Out4, the output can
     /// only be on or off.
     pub fn set_range(&mut self, range: HeaterRange) -> Result<(), InstrumentError> {
-        self.device.sendcmd(
-            "RANGE",
-            Some(Channel::Out(self.idx)),
-            Some(&[&range.to_writable()]),
-        )
+        self.device
+            .sendcmd("RANGE", Some(self.idx), Some(&[&range.to_writable()]))
     }
 
     /// Get the setpoint of this output.
@@ -161,9 +154,7 @@ impl<'d, I: Read + Write> Lakeshore336Output<'d, I> {
     /// Note: This assumes that the sensor is set up in Kelvin mode. If this is not the case, the
     /// setpoint that is returned will be wrong.
     pub fn get_setpoint(&mut self) -> Result<Temperature, InstrumentError> {
-        let res = self
-            .device
-            .query("SETP?", Some(Channel::Out(self.idx)), None)?;
+        let res = self.device.query("SETP?", Some(self.idx), None)?;
         Temperature::try_from_writable(res)
     }
 
@@ -171,11 +162,8 @@ impl<'d, I: Read + Write> Lakeshore336Output<'d, I> {
     /// Note: This assumes that the sensor is set up in Kelvin mode. If this is not the case, the
     /// setpoint will be set up wrong.
     pub fn set_setpoint(&mut self, setpoint: Temperature) -> Result<(), InstrumentError> {
-        self.device.sendcmd(
-            "SETP",
-            Some(Channel::Out(self.idx)),
-            Some(&[&setpoint.to_writable()]),
-        )
+        self.device
+            .sendcmd("SETP", Some(self.idx), Some(&[&setpoint.to_writable()]))
     }
 }
 
@@ -190,13 +178,14 @@ impl<'d, I: Read + Write> Lakeshore336Output<'d, I> {
     /// using the "AOUT?" command.
     pub fn get_heater_output(&mut self) -> Result<Fraction, InstrumentError> {
         let res = match self.idx {
-            Output::Out1 | Output::Out2 => {
-                self.device
-                    .query("HTR?", Some(Channel::Out(self.idx)), None)?
+            Channel::Out(Output::Out1) | Channel::Out(Output::Out2) => {
+                self.device.query("HTR?", Some(self.idx), None)?
             }
-            Output::Out3 | Output::Out4 => {
-                self.device
-                    .query("AOUT?", Some(Channel::Out(self.idx)), None)?
+            Channel::Out(Output::Out3) | Channel::Out(Output::Out4) => {
+                self.device.query("AOUT?", Some(self.idx), None)?
+            }
+            Channel::In(_) => {
+                unreachable!("Output channel creation ensures that this is not an input channel.")
             }
         };
         Fraction::try_from_writable(res)
