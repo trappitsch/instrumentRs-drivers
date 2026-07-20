@@ -39,7 +39,7 @@ checksum = "773648b94d0e5d620f64f280777445740e61fe701025087ec8b57f45c791888b"
 [[package]]
 name = "instrumentrs2"
 version = "0.1.0"
-source = "git+https://github.com/trappitsch/instrumentRs2#ee03208ffa441a9affe9765e7968d1646ef696b2"
+source = "git+https://github.com/trappitsch/instrumentRs2?rev=ee03208f#ee03208ffa441a9affe9765e7968d1646ef696b2"
 dependencies = [
  "termcolor",
  "thiserror",
