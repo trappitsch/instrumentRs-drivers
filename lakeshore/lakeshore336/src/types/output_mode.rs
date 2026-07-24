@@ -1,6 +1,8 @@
 //! Types for setting/getting output mode.
 
-use crate::{Input, InstrumentError, Parameter};
+use instrumentrs::Parameter;
+
+use crate::{Input, InstrumentError, InstrumentParameter};
 
 /// Output mode setup.
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -26,7 +28,7 @@ impl OutputModeSetup {
     }
 }
 
-impl Parameter<String> for OutputModeSetup {
+impl InstrumentParameter<String> for OutputModeSetup {
     fn to_writable(&self) -> String {
         let i2f = match self.input_to_follow {
             None => "0",
@@ -72,67 +74,34 @@ impl Parameter<String> for OutputModeSetup {
 
 /// The output modes that are available.
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Parameter)]
+#[cmd("{}")]
 pub enum OutputMode {
+    #[param("0")]
     Off,
+    #[param("1")]
     ClosedLoopPID,
+    #[param("2")]
     Zone,
+    #[param("3")]
     OpenLoop,
+    #[param("4")]
     MonitorOut,
+    #[param("5")]
     WarmupSupply,
+    #[param("6")]
     Mirroring,
-}
-
-impl Parameter<String> for OutputMode {
-    fn to_writable(&self) -> String {
-        match self {
-            OutputMode::Off => "0".to_string(),
-            OutputMode::ClosedLoopPID => "1".to_string(),
-            OutputMode::Zone => "2".to_string(),
-            OutputMode::OpenLoop => "3".to_string(),
-            OutputMode::MonitorOut => "4".to_string(),
-            OutputMode::WarmupSupply => "5".to_string(),
-            OutputMode::Mirroring => "6".to_string(),
-        }
-    }
-
-    fn try_from_writable(val: String) -> Result<Self, instrumentrs2::InstrumentError> {
-        match val.trim() {
-            "0" => Ok(OutputMode::Off),
-            "1" => Ok(OutputMode::ClosedLoopPID),
-            "2" => Ok(OutputMode::Zone),
-            "3" => Ok(OutputMode::OpenLoop),
-            "4" => Ok(OutputMode::MonitorOut),
-            "5" => Ok(OutputMode::WarmupSupply),
-            "6" => Ok(OutputMode::Mirroring),
-            _ => Err(InstrumentError::BadInstrumentResponseString { msg: val }),
-        }
-    }
 }
 
 /// Sets the status on powering up the instrument.
 ///
 /// This is used for the output mode.
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Parameter)]
+#[cmd("{}")]
 pub enum OnPowerup {
+    #[param("0")]
     Disabled,
+    #[param("1")]
     Enabled,
-}
-
-impl Parameter<String> for OnPowerup {
-    fn to_writable(&self) -> String {
-        match self {
-            OnPowerup::Disabled => "0".to_string(),
-            OnPowerup::Enabled => "1".to_string(),
-        }
-    }
-
-    fn try_from_writable(val: String) -> Result<Self, InstrumentError> {
-        match val.trim() {
-            "0" => Ok(OnPowerup::Disabled),
-            "1" => Ok(OnPowerup::Enabled),
-            _ => Err(InstrumentError::BadInstrumentResponseString { msg: val }),
-        }
-    }
 }

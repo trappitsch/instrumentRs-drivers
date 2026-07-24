@@ -1,6 +1,6 @@
 //! Tests the instrument queries for Lakeshore336.
 
-use instrumentrs2::{smock, u};
+use instrumentrs::{smock, u};
 
 use lakeshore336::Lakeshore336;
 

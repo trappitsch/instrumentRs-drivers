@@ -2,9 +2,9 @@
 
 use std::io::{Read, Write};
 
-use instrumentrs2::transport::{Transport, Writable, read_until_terminator, write_all};
+use instrumentrs::transport::{Transport, Writable, read_until_terminator, write_all};
 
-use crate::{InstrumentError, Lakeshore336, Parameter, channel::Channel};
+use crate::{InstrumentError, InstrumentParameter, Lakeshore336, channel::Channel};
 
 impl<I> Transport<&str, String> for Lakeshore336<I>
 where

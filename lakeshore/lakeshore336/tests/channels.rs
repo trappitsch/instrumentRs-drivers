@@ -1,6 +1,6 @@
 //! Tests for the temperature channels of the Lakeshore336.
 
-use instrumentrs2::{smock, u};
+use instrumentrs::{smock, u};
 
 use lakeshore336::{Input, Lakeshore336};
 use measurements::test_utils::assert_almost_eq;

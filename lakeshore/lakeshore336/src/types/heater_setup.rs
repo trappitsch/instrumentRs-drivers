@@ -1,8 +1,9 @@
 //! Implement types for outputs.
 
+use instrumentrs::Parameter;
 use measurements::Current;
 
-use crate::{InstrumentError, Parameter};
+use crate::{InstrumentError, InstrumentParameter};
 
 /// Heater setup.
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -35,7 +36,7 @@ impl HeaterSetup {
     }
 }
 
-impl Parameter<String> for HeaterSetup {
+impl InstrumentParameter<String> for HeaterSetup {
     fn to_writable(&self) -> String {
         format!(
             "{},{},{}",
@@ -68,29 +69,15 @@ impl Parameter<String> for HeaterSetup {
 
 /// Heater resistance setting.
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Parameter)]
+#[cmd("{}")]
 pub enum HeaterResistance {
     /// 25 Ohm.
+    #[param("1")]
     R25Ohm,
     /// 50 Ohm.
+    #[param("2")]
     R50Ohm,
-}
-
-impl Parameter<String> for HeaterResistance {
-    fn to_writable(&self) -> String {
-        match self {
-            HeaterResistance::R25Ohm => String::from("1"),
-            HeaterResistance::R50Ohm => String::from("2"),
-        }
-    }
-
-    fn try_from_writable(val: String) -> Result<Self, InstrumentError> {
-        match val.trim() {
-            "1" => Ok(HeaterResistance::R25Ohm),
-            "2" => Ok(HeaterResistance::R50Ohm),
-            _ => Err(InstrumentError::BadInstrumentResponseString { msg: val }),
-        }
-    }
 }
 
 /// Maximum heater output current.
@@ -127,7 +114,7 @@ impl HeaterMaxOutputCurrent {
     }
 }
 
-impl Parameter<String> for HeaterMaxOutputCurrent {
+impl InstrumentParameter<String> for HeaterMaxOutputCurrent {
     fn to_writable(&self) -> String {
         match self {
             HeaterMaxOutputCurrent::User(c) => format!("0,+{:.3}", c.as_amperes()),
@@ -160,64 +147,34 @@ impl Parameter<String> for HeaterMaxOutputCurrent {
 
 /// Heater output display units.
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Parameter)]
+#[cmd("{}")]
 pub enum HeaterOutputDisplay {
     /// Show heater output current on display.
+    #[param("1")]
     Current,
     /// Show heater output power on display.
+    #[param("2")]
     Power,
-}
-
-impl Parameter<String> for HeaterOutputDisplay {
-    fn to_writable(&self) -> String {
-        match self {
-            HeaterOutputDisplay::Current => "1".into(),
-            HeaterOutputDisplay::Power => "2".into(),
-        }
-    }
-
-    fn try_from_writable(val: String) -> Result<Self, InstrumentError> {
-        match val.trim() {
-            "1" => Ok(HeaterOutputDisplay::Current),
-            "2" => Ok(HeaterOutputDisplay::Power),
-            _ => Err(InstrumentError::BadInstrumentResponseString { msg: val }),
-        }
-    }
 }
 
 /// Range for the heater output.
 ///
 /// Note that for Outputs 2 and 3, only Off and LowOrOn are valid.
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Parameter)]
+#[cmd("{}")]
 pub enum HeaterRange {
     /// Heater output is off.
+    #[param("0")]
     Off,
     /// Heater output is low (output Out1 and Out2) or on (output Out3 or Out4)
+    #[param("1")]
     LowOrOn,
     /// Heater output is medium (only Out1 and Out2).
+    #[param("2")]
     Medium,
     /// Heater output is high (only Out1 and Out2).
+    #[param("3")]
     High,
-}
-
-impl Parameter<String> for HeaterRange {
-    fn to_writable(&self) -> String {
-        match self {
-            HeaterRange::Off => "0".to_string(),
-            HeaterRange::LowOrOn => "1".to_string(),
-            HeaterRange::Medium => "2".to_string(),
-            HeaterRange::High => "3".to_string(),
-        }
-    }
-
-    fn try_from_writable(val: String) -> Result<Self, InstrumentError> {
-        match val.trim() {
-            "0" => Ok(HeaterRange::Off),
-            "1" => Ok(HeaterRange::LowOrOn),
-            "2" => Ok(HeaterRange::Medium),
-            "3" => Ok(HeaterRange::High),
-            _ => Err(InstrumentError::BadInstrumentResponseString { msg: val }),
-        }
-    }
 }

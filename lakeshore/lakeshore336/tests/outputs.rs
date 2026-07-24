@@ -1,6 +1,6 @@
 //! Test the outputs.
 
-use instrumentrs2::{smock, u};
+use instrumentrs::{smock, u};
 
 use lakeshore336::{
     Input, Lakeshore336, Output,

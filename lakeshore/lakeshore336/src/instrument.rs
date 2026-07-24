@@ -5,7 +5,7 @@
 
 use std::io::{Read, Write};
 
-use instrumentrs2::transport::{Transport, Writable};
+use instrumentrs::transport::{Transport, Writable};
 use measurements::{Fraction, Temperature};
 
 use crate::{
@@ -14,7 +14,7 @@ use crate::{
     types::{HeaterSetup, OutputModeSetup, heater_setup::HeaterRange},
 };
 
-pub trait Parameter<W: Writable>: Sized {
+pub trait InstrumentParameter<W: Writable>: Sized {
     fn to_writable(&self) -> W;
     fn try_from_writable(val: W) -> Result<Self, InstrumentError>;
 }

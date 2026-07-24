@@ -37,12 +37,23 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "773648b94d0e5d620f64f280777445740e61fe701025087ec8b57f45c791888b"
 
 [[package]]
-name = "instrumentrs2"
-version = "0.1.0"
-source = "git+https://github.com/trappitsch/instrumentRs2?rev=ee03208f#ee03208ffa441a9affe9765e7968d1646ef696b2"
+name = "instrumentrs"
+version = "0.2.0"
+source = "git+https://github.com/trappitsch/instrumentRs2?rev=117e3f71#117e3f716cb7f6a516dc1285caa88d94caa3a494"
 dependencies = [
+ "instrumentrs-macros",
  "termcolor",
  "thiserror",
+]
+
+[[package]]
+name = "instrumentrs-macros"
+version = "0.2.0"
+source = "git+https://github.com/trappitsch/instrumentRs2?rev=117e3f71#117e3f716cb7f6a516dc1285caa88d94caa3a494"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 3.0.3",
 ]
 
 [[package]]
@@ -59,7 +70,7 @@ dependencies = [
 name = "lakeshore336"
 version = "0.1.0"
 dependencies = [
- "instrumentrs2",
+ "instrumentrs",
  "measurements",
  "serde",
  "serialport",
@@ -183,7 +194,7 @@ checksum = "d540f220d3187173da220f885ab66608367b6574e925011a9353e4badda91d79"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn",
+ "syn 2.0.118",
 ]
 
 [[package]]
@@ -217,6 +228,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "syn"
+version = "3.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "53e9bae58849f64dfa4f5d5ae372c8341f7305f82a3868709269343628b659a3"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "unicode-ident",
+]
+
+[[package]]
 name = "termcolor"
 version = "1.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -242,7 +264,7 @@ checksum = "ebc4ee7f67670e9b64d05fa4253e753e016c6c95ff35b89b7941d6b856dec1d5"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn",
+ "syn 2.0.118",
 ]
 
 [[package]]
