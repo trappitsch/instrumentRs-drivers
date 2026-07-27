@@ -4,7 +4,7 @@ use std::io::{Read, Write};
 
 use instrumentrs::transport::{Transport, Writable, read_until_terminator, write_all};
 
-use crate::{InstrumentError, InstrumentParameter, Lakeshore336, channel::Channel};
+use crate::{InstrumentError, Lakeshore336, channel::Channel};
 
 impl<I> Transport<&str, String> for Lakeshore336<I>
 where
@@ -53,11 +53,11 @@ fn make_package(cmd: &str, idx: Option<Channel>, args: Option<&[&str]>) -> Strin
         }
         // Channel, no arguments
         (Some(idx), None) => {
-            format!("{} {}", cmd, idx.to_writable())
+            format!("{} {}", cmd, idx.inner_to_writable())
         }
         // Channel and arguments
         (Some(idx), Some(args)) => {
-            let mut cmd_str = format!("{} {}", cmd, idx.to_writable());
+            let mut cmd_str = format!("{} {}", cmd, idx.inner_to_writable());
             for arg in args {
                 cmd_str.push(',');
                 cmd_str.push_str(arg);
