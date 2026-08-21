@@ -1,0 +1,24 @@
+[package]
+name = "smc-hrr"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+instrumentrs = { git = "https://github.com/trappitsch/instrumentRs2", rev = "fbc1bfd4" }
+measurements = { version = "0.11.1", features = ["std"] }
+
+serde = { version = "1", features = ["derive"], optional = true }
+serialport = { version = "4.10", optional = true }
+
+[dev-dependencies]
+instrumentrs = { git = "https://github.com/trappitsch/instrumentRs2", rev = "fbc1bfd4", features = [
+  "mock-interface",
+] }
+
+[features]
+default = ["serialport"]
+serde = ["dep:serde", "measurements/serde"]
+serialport = ["dep:serialport"]
+
+[[example]]
+name = "spc"
