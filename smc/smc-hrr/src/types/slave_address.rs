@@ -5,7 +5,7 @@ use instrumentrs::Parameter;
 use crate::InstrumentParameter;
 
 /// Possible slave addresses of an SMC HRR Chiller.
-#[derive(Debug, Default, Parameter)]
+#[derive(Copy, Clone, Debug, Default, Parameter, PartialEq, Eq)]
 #[cmd("{}")]
 pub enum SlaveAddress {
     #[default]

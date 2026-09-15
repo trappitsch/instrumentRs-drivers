@@ -38,6 +38,7 @@ impl<I: Read + Write> SmcHrr<I> {
         }
     }
 
+    // TODO: Put this on the bottom with special ones.
     /// Create a new SmcHrr with a specific base address.
     ///
     /// Arguments:
@@ -49,6 +50,16 @@ impl<I: Read + Write> SmcHrr<I> {
             slave_address,
             silent_interval: Default::default(),
         }
+    }
+
+    /// Get the slave address of this instrument.
+    pub fn get_slave_address(&self) -> SlaveAddress {
+        self.slave_address
+    }
+
+    /// Set the slave address of this instrument.
+    pub fn set_slave_address(&mut self, value: SlaveAddress) {
+        self.slave_address = value;
     }
 
     pub fn get_discharge_pressure(&mut self) -> Result<DischargePressure, InstrumentError> {
