@@ -5,7 +5,7 @@ use std::time::{Duration, Instant};
 use crate::InstrumentParameter;
 
 /// Define the total minimum silent interval between writes (see `SilentInterval`)
-static SILENT_INT: Duration = Duration::from_micros(8021);
+static SILENT_INT: Duration = Duration::from_micros(6563);
 
 #[derive(Debug, PartialEq)]
 pub enum SerialRemoteInstruction {

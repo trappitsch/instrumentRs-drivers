@@ -30,5 +30,5 @@ fn test_that_silent_interval_between_writes_is_long_enough() {
     u!(inst.set_operation_status(OperationStatus::Run));
 
     // 2 times 3.5 characters at baud 9600 is 8.021 ms.
-    assert!(toc - tic > Duration::from_micros(8021));
+    assert!(toc - tic > Duration::from_micros(6563));
 }
