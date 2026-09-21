@@ -6,8 +6,6 @@ pub use flags::{AlarmFlags, StatusFlag};
 pub use reads::{DischargePressure, DischargeTemperature, ElectricConductivity, FlowRate};
 pub use slave_address::SlaveAddress;
 
-pub(crate) use comms::SilentInterval;
-
 mod comms;
 mod control;
 mod flags;

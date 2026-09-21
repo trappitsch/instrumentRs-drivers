@@ -2,13 +2,10 @@ use std::io::{Read, Write};
 
 use instrumentrs::{
     InstrumentError,
-    transport::{Transport, fn_sync::read_number_of_bytes},
+    transport::{SilentInterval, Transport, fn_sync::read_number_of_bytes},
 };
 
-use crate::{
-    InstrumentParameter, SmcHrr,
-    types::{SilentInterval, SlaveAddress},
-};
+use crate::{InstrumentParameter, SmcHrr, types::SlaveAddress};
 
 impl<I> Transport<&[u8], Vec<u8>> for SmcHrr<I>
 where

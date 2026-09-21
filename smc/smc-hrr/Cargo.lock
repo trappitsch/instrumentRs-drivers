@@ -105,7 +105,7 @@ dependencies = [
 [[package]]
 name = "instrumentrs"
 version = "0.2.0"
-source = "git+https://github.com/trappitsch/instrumentRs2?rev=fbc1bfd4#fbc1bfd402d9126a6b06ae672f26383785455386"
+source = "git+https://github.com/trappitsch/instrumentRs2?rev=f76275b6#f76275b61be5620e9fc6706552ce8974f0e59321"
 dependencies = [
  "instrumentrs-macros",
  "termcolor",
@@ -115,7 +115,7 @@ dependencies = [
 [[package]]
 name = "instrumentrs-macros"
 version = "0.2.0"
-source = "git+https://github.com/trappitsch/instrumentRs2?rev=fbc1bfd4#fbc1bfd402d9126a6b06ae672f26383785455386"
+source = "git+https://github.com/trappitsch/instrumentRs2?rev=f76275b6#f76275b61be5620e9fc6706552ce8974f0e59321"
 dependencies = [
  "proc-macro2",
  "quote",
